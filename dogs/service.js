@@ -1,17 +1,18 @@
 const feathersKnex = require('feathers-knex')
-const { indexBy, prop, pipe } = require('ramda')
 
-const indexById = indexBy(prop('id'))
+module.exports = function () {
+  const app = this
+  const db = app.get('db')
 
-module.exports = function (db) {
-  return feathersKnex({
-    Model: db,
-    name: 'dogs'
-  })
+  const name = 'dogs'
+  const options = { Model: db, name }
+
+  app.use(name, feathersKnex(options))
+  app.service(name).hooks(hooks)
 }
 
-module.exports.after = {
-  find: (hook)  => {
-    hook.result = indexById(hook.result)
-  }
+const hooks = {
+  before: {},
+  after: {},
+  error: {}
 }
